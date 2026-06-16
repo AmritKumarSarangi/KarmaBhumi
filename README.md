@@ -31,14 +31,14 @@ KarmaBhumi is a real-time, event-driven mini stock exchange architecture styled 
 
 ## Technical Highlights & Features
 
-- **✓ 100,000+ Simulated Orders**: Validated with a multi-threaded load test script (`load_test.py`).
-- **✓ C++20 Matching Engine**: Core order-book featuring price-time priority matching with O(log n) inserts.
-- **✓ Dynamic Order Types**: Full support for `LIMIT`, `MARKET`, `IOC`, `FOK`, `STOP_LOSS`, and `GTT` orders.
-- **✓ Pre-Trade Risk Engine**: Enforces position limits, exposure ceilings, fat-finger detection, and circuit breakers.
-- **✓ Event-Sourced Persistence**: Every transition is stored as structured Kafka events into PostgreSQL.
-- **✓ Live Order Book & Charting**: Up-to-the-millisecond WebSocket feeds pushing top-10 levels, live trades, and real-time TradingView Candlestick charts.
-- **✓ Observability Stack**: Full metrics exporting to Prometheus and visual monitoring via Grafana.
-- **✓ Multi-Persona Simulator**: Retail, HFT, Market Maker, and Institutional bots generating realistic order flow.
+**✓ 100,000+ Simulated Orders**: Validated with a multi-threaded load test script (`load_test.py`).
+**✓ C++20 Matching Engine**: Core order-book featuring price-time priority matching with O(log n) inserts.
+**✓ Dynamic Order Types**: Full support for `LIMIT`, `MARKET`, `IOC`, `FOK`, `STOP_LOSS`, and `GTT` orders.
+**✓ Pre-Trade Risk Engine**: Enforces position limits, exposure ceilings, fat-finger detection, and circuit breakers.
+**✓ Event-Sourced Persistence**: Every transition is stored as structured Kafka events into PostgreSQL.
+**✓ Live Order Book & Charting**: Up-to-the-millisecond WebSocket feeds pushing top-10 levels, live trades, and real-time TradingView Candlestick charts.
+**✓ Observability Stack**: Full metrics exporting to Prometheus and visual monitoring via Grafana.
+**✓ Multi-Persona Simulator**: Retail, HFT, Market Maker, and Institutional bots generating realistic order flow.
 
 ---
 
