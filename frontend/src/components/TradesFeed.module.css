@@ -1,0 +1,128 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+
+.count {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+.colHeaders {
+  display: grid;
+  grid-template-columns: 2fr 2.5fr 1.5fr 1fr;
+  padding: 5px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.colHeaders span {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+}
+
+.colHeaders span:not(:first-child) {
+  text-align: right;
+}
+
+.feed {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 2fr 2.5fr 1.5fr 1fr;
+  padding: 4px 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.025);
+  transition: background 0.15s;
+  cursor: default;
+}
+
+.row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.time {
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+.price {
+  font-weight: 600;
+  font-size: 12.5px;
+  text-align: right;
+}
+
+.priceUp   { color: var(--accent); }
+.priceDown { color: var(--danger); }
+
+.qty {
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.arrow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.arrowUp   { color: var(--accent); }
+.arrowDown { color: var(--danger); }
+
+@keyframes flashGreenAnim {
+  0%   { background: rgba(0, 212, 170, 0); }
+  15%  { background: rgba(0, 212, 170, 0.2); }
+  100% { background: rgba(0, 212, 170, 0); }
+}
+
+@keyframes flashRedAnim {
+  0%   { background: rgba(255, 71, 87, 0); }
+  15%  { background: rgba(255, 71, 87, 0.2); }
+  100% { background: rgba(255, 71, 87, 0); }
+}
+
+.flashGreen { animation: flashGreenAnim 800ms ease forwards; }
+.flashRed   { animation: flashRedAnim   800ms ease forwards; }
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-dim);
+  font-size: 13px;
+  font-style: italic;
+}

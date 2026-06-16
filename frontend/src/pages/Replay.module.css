@@ -1,0 +1,255 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 8px;
+  color: var(--text-primary);
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin: 0;
+  text-shadow: 0 0 20px rgba(0, 212, 170, 0.15);
+}
+
+.controlCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.inputs {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-grow: 1;
+  min-width: 150px;
+}
+
+.group label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.group select, .group input {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px;
+  color: #fff;
+  font-size: 14px;
+  width: 100%;
+}
+
+.group select:focus, .group input:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.playBtn {
+  background: var(--accent);
+  color: #000;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.playBtn:hover {
+  opacity: 0.9;
+}
+
+.playBtn.pause {
+  background: var(--danger);
+  color: #fff;
+}
+
+.scrubberRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.scrubLabel {
+  font-size: 13px;
+  color: var(--text-muted);
+  width: 32px;
+  text-align: center;
+}
+
+.progressBar {
+  flex-grow: 1;
+  background: rgba(255, 255, 255, 0.05);
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressInner {
+  background: var(--accent);
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.1s linear;
+}
+
+.viewport {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .viewport {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  backdrop-filter: blur(12px);
+  min-height: 350px;
+}
+
+.panelTitle {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.obGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.obSide {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sideHeader {
+  font-size: 13px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+}
+
+.obRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 4px 0;
+}
+
+.bidPx {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.askPx {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.qty {
+  color: var(--text-muted);
+}
+
+.noData {
+  color: var(--text-muted);
+  text-align: center;
+  padding-top: 100px;
+  font-size: 14px;
+}
+
+.priceTicker {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.tickerLabel {
+  color: var(--text-muted);
+}
+
+.tickerVal {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.tradesTape {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tapeHeader {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+
+.tapeList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 220px;
+  overflow-y: auto;
+}
+
+.tapeRow {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  font-size: 13px;
+  padding: 2px 0;
+}
+
+.green {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--text-muted);
+}

@@ -1,0 +1,94 @@
+.container {
+  display: flex;
+  gap: 4px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.container::-webkit-scrollbar { height: 0; }
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 150ms ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tab:hover {
+  background: var(--surface-hover);
+  border-color: var(--border);
+}
+
+.tabActive {
+  background: var(--accent-dim) !important;
+  border-color: rgba(0, 212, 170, 0.3) !important;
+}
+
+.symbol {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.03em;
+}
+
+.tabActive .symbol {
+  color: var(--accent);
+}
+
+.price {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.change {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.changeUp {
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.changeDown {
+  color: var(--danger);
+  background: var(--danger-dim);
+}
+
+.flashUp {
+  animation: flashGreenBg 700ms ease forwards;
+}
+
+.flashDown {
+  animation: flashRedBg 700ms ease forwards;
+}
+
+@keyframes flashGreenBg {
+  0%   { background: rgba(0, 212, 170, 0); }
+  25%  { background: rgba(0, 212, 170, 0.18); }
+  100% { background: transparent; }
+}
+
+@keyframes flashRedBg {
+  0%   { background: rgba(255, 71, 87, 0); }
+  25%  { background: rgba(255, 71, 87, 0.18); }
+  100% { background: transparent; }
+}

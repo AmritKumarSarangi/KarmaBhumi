@@ -1,0 +1,221 @@
+.container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+
+.symbolSelect {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 24px 4px 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2300d4aa' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 7px center;
+}
+
+.form {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sideToggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 8px;
+  padding: 3px;
+  border: 1px solid var(--border);
+}
+
+.sideBtn {
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-muted);
+  transition: all 150ms;
+}
+
+.sideBtnBuy {
+  background: var(--accent) !important;
+  color: #0a0b0f !important;
+  box-shadow: 0 2px 12px rgba(0, 212, 170, 0.4);
+}
+
+.sideBtnSell {
+  background: var(--danger) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 12px rgba(255, 71, 87, 0.4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.select {
+  cursor: pointer;
+}
+
+.priceInput {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pricePrefix {
+  position: absolute;
+  left: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.numInput {
+  padding-left: 22px !important;
+  text-align: right;
+}
+
+.qtyControl {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.qtyBtn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 150ms;
+  flex-shrink: 0;
+}
+
+.qtyBtn:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.qtyInput {
+  flex: 1;
+  text-align: center;
+}
+
+.preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 7px;
+  border: 1px solid var(--border);
+}
+
+.previewLabel {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.previewValue {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 11px;
+  border-radius: 8px;
+  border: none;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 150ms;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submitBuy {
+  background: var(--accent);
+  color: #0a0b0f;
+}
+
+.submitBuy:hover:not(:disabled) {
+  background: #00efbe;
+  box-shadow: 0 4px 20px rgba(0, 212, 170, 0.45);
+}
+
+.submitSell {
+  background: var(--danger);
+  color: #fff;
+}
+
+.submitSell:hover:not(:disabled) {
+  background: #ff6878;
+  box-shadow: 0 4px 20px rgba(255, 71, 87, 0.45);
+}

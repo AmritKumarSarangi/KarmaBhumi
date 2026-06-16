@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 2s
+  evaluation_interval: 2s
+
+scrape_configs:
+  # Scrape C++ Matching Engine metrics
+  - job_name: 'matching-engine'
+    static_configs:
+      - targets: ['matching-engine:8080']
+    metrics_path: '/metrics'
+
+  # Scrape Python FastAPI Gateway metrics
+  - job_name: 'backend'
+    static_configs:
+      - targets: ['backend:8000']
+    metrics_path: '/metrics'

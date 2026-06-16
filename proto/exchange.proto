@@ -1,0 +1,281 @@
+syntax = "proto3";
+
+package exchange;
+
+option go_package = "./proto";
+
+// ============================================================
+// Core Service Definition
+// ============================================================
+
+service ExchangeService {
+  // Order lifecycle
+  rpc SubmitOrder(OrderRequest) returns (OrderResponse);
+  rpc CancelOrder(CancelRequest) returns (CancelResponse);
+  rpc AmendOrder(AmendRequest) returns (OrderResponse);
+
+  // Market data
+  rpc GetOrderBook(OrderBookRequest) returns (OrderBookSnapshot);
+  rpc GetMarketStats(MarketStatsRequest) returns (MarketStats);
+  rpc GetTrades(TradeHistoryRequest) returns (TradeHistoryResponse);
+
+  // Admin
+  rpc PauseMarket(MarketControlRequest) returns (MarketControlResponse);
+  rpc ResumeMarket(MarketControlRequest) returns (MarketControlResponse);
+  rpc SetCircuitBreakerLimit(CircuitBreakerConfig) returns (MarketControlResponse);
+
+  // Engine health
+  rpc Ping(Empty) returns (PongResponse);
+  rpc GetEngineMetrics(Empty) returns (EngineMetrics);
+}
+
+// ============================================================
+// Enums
+// ============================================================
+
+enum Side {
+  SIDE_UNKNOWN = 0;
+  BUY = 1;
+  SELL = 2;
+}
+
+enum OrderType {
+  ORDER_TYPE_UNKNOWN = 0;
+  LIMIT = 1;
+  MARKET = 2;
+  STOP_LOSS = 3;
+  STOP_LIMIT = 4;
+  IOC = 5;   // Immediate-or-Cancel
+  FOK = 6;   // Fill-or-Kill
+  GTT = 7;   // Good-Till-Time
+}
+
+enum OrderStatus {
+  STATUS_UNKNOWN = 0;
+  ACCEPTED = 1;
+  REJECTED = 2;
+  FILLED = 3;
+  PARTIAL_FILL = 4;
+  CANCELLED = 5;
+  EXPIRED = 6;
+  PENDING = 7;
+}
+
+enum RejectionReason {
+  REASON_NONE = 0;
+  INSUFFICIENT_FUNDS = 1;
+  POSITION_LIMIT_EXCEEDED = 2;
+  EXPOSURE_LIMIT_EXCEEDED = 3;
+  FAT_FINGER_DETECTED = 4;
+  CIRCUIT_BREAKER_ACTIVE = 5;
+  MARKET_HALTED = 6;
+  INVALID_ORDER = 7;
+  FOK_NOT_FILLABLE = 8;
+  SYMBOL_NOT_FOUND = 9;
+}
+
+// ============================================================
+// Order Submission
+// ============================================================
+
+message OrderRequest {
+  string client_order_id = 1;   // Client-provided idempotency key
+  string user_id = 2;
+  string symbol = 3;
+  Side side = 4;
+  OrderType order_type = 5;
+  double price = 6;             // Limit price (0 for MARKET)
+  double stop_price = 7;        // For STOP_LOSS / STOP_LIMIT
+  int32 quantity = 8;
+  int64 expire_time_ms = 9;     // Unix ms, for GTT orders
+  string session_id = 10;
+}
+
+message OrderResponse {
+  string order_id = 1;
+  string client_order_id = 2;
+  OrderStatus status = 3;
+  RejectionReason rejection_reason = 4;
+  string rejection_message = 5;
+  int32 filled_quantity = 6;
+  int32 remaining_quantity = 7;
+  double avg_fill_price = 8;
+  repeated Trade trades = 9;
+  int64 timestamp_ns = 10;      // Nanosecond timestamp for latency tracking
+  int64 matching_latency_ns = 11;
+}
+
+// ============================================================
+// Trade
+// ============================================================
+
+message Trade {
+  string trade_id = 1;
+  string symbol = 2;
+  double price = 3;
+  int32 quantity = 4;
+  string buy_order_id = 5;
+  string sell_order_id = 6;
+  string buyer_user_id = 7;
+  string seller_user_id = 8;
+  int64 timestamp_ns = 9;
+}
+
+// ============================================================
+// Cancel / Amend
+// ============================================================
+
+message CancelRequest {
+  string order_id = 1;
+  string user_id = 2;
+  string symbol = 3;
+}
+
+message CancelResponse {
+  bool success = 1;
+  string message = 2;
+  string order_id = 3;
+  int32 cancelled_quantity = 4;
+}
+
+message AmendRequest {
+  string order_id = 1;
+  string user_id = 2;
+  double new_price = 3;
+  int32 new_quantity = 4;
+}
+
+// ============================================================
+// Order Book
+// ============================================================
+
+message OrderBookRequest {
+  string symbol = 1;
+  int32 depth = 2;  // Number of levels, default 10
+}
+
+message PriceLevel {
+  double price = 1;
+  int32 total_quantity = 2;
+  int32 order_count = 3;
+}
+
+message OrderBookSnapshot {
+  string symbol = 1;
+  repeated PriceLevel bids = 2;  // Descending price
+  repeated PriceLevel asks = 3;  // Ascending price
+  double best_bid = 4;
+  double best_ask = 5;
+  double spread = 6;
+  double mid_price = 7;
+  int64 sequence_number = 8;
+  int64 timestamp_ns = 9;
+}
+
+// ============================================================
+// Market Stats / Analytics
+// ============================================================
+
+message MarketStatsRequest {
+  string symbol = 1;
+}
+
+message MarketStats {
+  string symbol = 1;
+  double last_price = 2;
+  double open_price = 3;
+  double high_price = 4;
+  double low_price = 5;
+  double close_price = 6;
+  int64 volume = 7;
+  double vwap = 8;              // Volume Weighted Average Price
+  double spread = 9;
+  double order_imbalance = 10;  // (buy_vol - sell_vol) / total_vol
+  int32 bid_depth = 11;
+  int32 ask_depth = 12;
+  int64 trade_count = 13;
+  int64 timestamp_ns = 14;
+  bool is_halted = 15;
+  double circuit_breaker_limit = 16;
+}
+
+// ============================================================
+// Trade History
+// ============================================================
+
+message TradeHistoryRequest {
+  string symbol = 1;
+  int32 limit = 2;
+  int64 from_timestamp_ns = 3;
+  int64 to_timestamp_ns = 4;
+}
+
+message TradeHistoryResponse {
+  repeated Trade trades = 1;
+  int32 total_count = 2;
+}
+
+// ============================================================
+// Admin / Market Control
+// ============================================================
+
+message MarketControlRequest {
+  string symbol = 1;    // Empty = all symbols
+  string admin_id = 2;
+  string reason = 3;
+}
+
+message MarketControlResponse {
+  bool success = 1;
+  string message = 2;
+  string symbol = 3;
+  bool is_halted = 4;
+}
+
+message CircuitBreakerConfig {
+  string symbol = 1;
+  double price_change_pct = 2;    // e.g. 20.0 for 20%
+  int32 window_seconds = 3;       // Time window for the check
+  bool enabled = 4;
+}
+
+// ============================================================
+// Engine Metrics
+// ============================================================
+
+message EngineMetrics {
+  int64 total_orders_received = 1;
+  int64 total_orders_matched = 2;
+  int64 total_orders_cancelled = 3;
+  int64 total_trades_executed = 4;
+  int64 total_orders_rejected = 5;
+  double orders_per_second = 6;
+  double trades_per_second = 7;
+  double p50_latency_ns = 8;
+  double p95_latency_ns = 9;
+  double p99_latency_ns = 10;
+  double p999_latency_ns = 11;
+  int64 order_book_size = 12;
+  int64 uptime_seconds = 13;
+  repeated SymbolMetrics symbol_metrics = 14;
+}
+
+message SymbolMetrics {
+  string symbol = 1;
+  int64 order_count = 2;
+  int64 trade_count = 3;
+  double volume = 4;
+  bool is_halted = 5;
+}
+
+// ============================================================
+// Misc
+// ============================================================
+
+message Empty {}
+
+message PongResponse {
+  string message = 1;
+  int64 timestamp_ns = 2;
+  string version = 3;
+}

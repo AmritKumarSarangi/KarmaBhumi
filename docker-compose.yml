@@ -1,0 +1,201 @@
+version: '3.8'
+
+services:
+  # ============================================================
+  # 1. PostgreSQL Database
+  # ============================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: exchangex-postgres
+    environment:
+      POSTGRES_DB: exchangex
+      POSTGRES_USER: exchange
+      POSTGRES_PASSWORD: exchange123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U exchange -d exchangex"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================
+  # 2. Redis Cache
+  # ============================================================
+  redis:
+    image: redis:7-alpine
+    container_name: exchangex-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================
+  # 3. Zookeeper
+  # ============================================================
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: exchangex-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  # ============================================================
+  # 4. Apache Kafka
+  # ============================================================
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: exchangex-kafka
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    healthcheck:
+      test: ["CMD-SHELL", "cub kafka-ready -b localhost:9092 1 20"]
+      interval: 15s
+      timeout: 25s
+      retries: 10
+
+  # ============================================================
+  # 5. Kafka Topic Initialiser
+  # ============================================================
+  kafka-init:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: exchangex-kafka-init
+    depends_on:
+      kafka:
+        condition: service_healthy
+    command: >
+      bash -c "
+      kafka-topics.sh --create --if-not-exists --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1 --topic trades &&
+      kafka-topics.sh --create --if-not-exists --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1 --topic order-book-updates &&
+      kafka-topics.sh --create --if-not-exists --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1 --topic risk-alerts &&
+      kafka-topics.sh --create --if-not-exists --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1 --topic market-data &&
+      kafka-topics.sh --create --if-not-exists --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1 --topic orders &&
+      kafka-topics.sh --create --if-not-exists --bootstrap-server kafka:9092 --partitions 1 --replication-factor 1 --topic cancels &&
+      echo 'Kafka topics created successfully!'
+      "
+
+  # ============================================================
+  # 6. C++ Matching Engine
+  # ============================================================
+  matching-engine:
+    build:
+      context: .
+      dockerfile: matching-engine/Dockerfile
+    container_name: exchangex-matching-engine
+    ports:
+      - "50051:50051"
+      - "8080:8080"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKERS: kafka:9092
+      GRPC_PORT: 50051
+      METRICS_PORT: 8080
+      SYMBOLS: AAPL,GOOGL,TSLA,MSFT,AMZN
+    restart: on-failure
+
+  # ============================================================
+  # 7. Python FastAPI Backend (API Gateway & Event Consumers)
+  # ============================================================
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: exchangex-backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      matching-engine:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+    env_file:
+      - .env
+    volumes:
+      - ./scripts:/app/scripts
+      - ./backend:/app
+    restart: on-failure
+
+  # ============================================================
+  # 8. React Web Dashboard
+  # ============================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: exchangex-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: always
+
+  # ============================================================
+  # 9. Prometheus Metrics Scraper
+  # ============================================================
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: exchangex-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: always
+
+  # ============================================================
+  # 10. Grafana Analytics Visualisation
+  # ============================================================
+  grafana:
+    image: grafana/grafana:10.0.0
+    container_name: exchangex-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+    volumes:
+      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus
+    restart: always
+
+  # ============================================================
+  # 11. Kafka UI (Bonus Monitoring tool)
+  # ============================================================
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: exchangex-kafka-ui
+    ports:
+      - "8090:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+volumes:
+  pgdata:
