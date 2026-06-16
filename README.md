@@ -45,7 +45,7 @@ KarmaBhumi is a real-time, event-driven mini stock exchange architecture styled 
 ## Directory Layout
 
 ```
-e:/exchangeX/
+KarmaBhumi/
 ├── proto/                     # Protocol Buffers / gRPC contract
 ├── matching-engine/           # C++20 matching engine service
 │   ├── src/                   # Matching engine source files
